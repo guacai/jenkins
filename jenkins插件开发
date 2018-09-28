@@ -1,0 +1,119 @@
+jenkins 插件开发
+
+准备开发环境： jdk1.8以上、 maven、 idea .
+
+1 : 生成 hello world 插件jenkins 插件
+
+ (1): 新建文件夹：插件项目索要放置的路径
+
+ (2): 修改maven 的settings.xml 文件 C:\Users\Administrator\.m2\settings.xml
+
+ ```
+ <settings>
+    <pluginGroups>
+        <pluginGroup>org.jenkins-ci.tools</pluginGroup>
+    </pluginGroups>
+
+    <profiles>
+        <!-- Give access to Jenkins plugins -->
+        <profile>
+            <id>jenkins</id>
+            <activation>
+                <activeByDefault>true</activeByDefault> <!-- change this to false, if you don't like to have it on per default -->
+            </activation>
+            <repositories>
+                <repository>
+                    <id>repo.jenkins-ci.org</id>
+                    <url>https://repo.jenkins-ci.org/public/</url>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>repo.jenkins-ci.org</id>
+                    <url>https://repo.jenkins-ci.org/public/</url>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+    <mirrors>
+        <mirror>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+            <mirrorOf>m.g.o-public</mirrorOf>
+        </mirror>
+    </mirrors>
+</settings>
+ ```
+ 
+ (3): 按照下面流程走 ：
+
+      1：进入文件夹路径下 cmd 打开窗口 
+
+      2:mvn -U org.jenkins-ci.tools:maven-hpi-plugin:create -DgroupId={your.gound.id} -DartifactId={your.plugin.id}
+
+      3:mvn archetype:generate -Dfilter=io.jenkins.archetypes:
+      
+      4:idea 导入项目 
+
+   参考：
+   >https://blog.csdn.net/xlyrh/article/details/78366240
+   
+   >https://wiki.jenkins.io/display/JENKINS/Plugin+tutorial
+
+ (3): 打包：
+
+   mvn package 
+   
+  由于操作mysql 数据库：所以pom 文件加入 mysql dependency
+
+  ```
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.26</version>
+        </dependency>
+  ```
+  
+  备注：选择5.1.26 一开始添加6.0.6版本，打包报错
+ 
+  ```
+   WARNING] Rule 3: org.apache.maven.plugins.enforcer.EnforceBytecodeVersion failed with message:
+   Found Banned Dependency: mysql:mysql-connector-java:jar:6.0.6
+   Use 'mvn dependency:tree' to locate the source of the banned dependencies.
+  ```
+
+ (3): jenkins 网页客户端上传本地打包好的插件：
+
+ ![image](/uploads/f0005c7433cd391b2412f0398b9dfc28/image.png)
+
+2:jenkins插件调试
+  
+原理：java的远程debug
+
+>:https://blog.csdn.net/FANGAOHUA200/article/details/71257947
+
+(1)本机器调试
+
+  设置调试的端口：插件项目 cmd 窗口下执行 ：set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=n
+ 
+![image](/uploads/455c7dfed8237e4c436b7fb9f4a7412a/image.png)
+   
+  8000端口： 有可能被占用,关闭占用端口程序，或者修改启动端口号.
+   
+ 运行插件： 插件项目 cmd 窗口下执行 ： mvn hpi:run
+
+![image](/uploads/306ef883ab74d2fc09681ba619c2f79c/image.png)
+
+ 参考：
+ >https://www.jianshu.com/p/fe0850d79e61
+   
+
+3.使用插件
+
+ (1) filelist插件举例
+
+![image](/uploads/6bf0edd26d3b469f281c0c3b9f727b4f/image.png)
+
+
+
+4. mysql 配置插件： job-database-manager-mysql
