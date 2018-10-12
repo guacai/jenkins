@@ -117,3 +117,20 @@ jenkins 插件开发
 
 
 4. mysql 配置插件： job-database-manager-mysql
+
+
+5. 插件开发
+
+(1):java类 extends Builder implements SimpleBuildStep
+(2):@DataBoundConstructor 构造方法传参数
+(3):perform方式是插件执行的内容
+(4):@Symbol 插件的标识，类似与id，不能重复
+(5):doCheckName方法：参数检查 getDisplayName方法：插件名称
+(6):远程读写文件
+```
+FilePath file = new FilePath(workspace.getChannel(), filePath);
+file.write(value,null);
+InputStream is = file.read();
+Reader reader = new InputStreamReader(is);
+BufferedReader br = new BufferedReader(reader);
+```
